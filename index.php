@@ -1,89 +1,68 @@
 <?php
-// Ejercicio 6: Sistema de pedidos con excepciones
-class Pedido {
-    const IMPUESTO = 0.07; // 7 %
+// Ejercicio 1: Estadísticas de calificaciones
+$notas = [78, 95, 67, 88, 91, 72, 60, 84, 100, 76];
 
-    private $cliente;
-    private $producto;
-    private $precio;
-    private $cantidad;
+$cantidad   = count($notas);
+$suma       = 0;
+$mayor      = $notas[0];
+$menor      = $notas[0];
+$aprobados  = 0;
+$reprobados = 0;
 
-    public function __construct($cliente, $producto, $precio, $cantidad) {
-        if ($cantidad <= 0) {
-            throw new Exception("La cantidad debe ser mayor que cero.");
-        }
-        if ($precio <= 0) {
-            throw new Exception("El precio debe ser mayor que cero.");
-        }
-        $this->cliente  = $cliente;
-        $this->producto = $producto;
-        $this->precio   = $precio;
-        $this->cantidad = $cantidad;
-    }
-
-    public function calcularSubtotal() {
-        return $this->precio * $this->cantidad;
-    }
-
-    public function calcularImpuesto() {
-        return $this->calcularSubtotal() * self::IMPUESTO;
-    }
-
-    public function calcularTotal() {
-        return $this->calcularSubtotal() + $this->calcularImpuesto();
-    }
-
-    public function mostrarResumen() {
-        $html  = "Cliente: {$this->cliente}<br>";
-        $html .= "Producto: {$this->producto}<br>";
-        $html .= "Precio unitario: $" . number_format($this->precio, 2) . "<br>";
-        $html .= "Cantidad: {$this->cantidad}<br>";
-        $html .= "Subtotal: $" . number_format($this->calcularSubtotal(), 2) . "<br>";
-        $html .= "Impuesto (" . (self::IMPUESTO * 100) . "%): $" . number_format($this->calcularImpuesto(), 2) . "<br>";
-        $html .= "<strong>Total: $" . number_format($this->calcularTotal(), 2) . "</strong>";
-        return $html;
-    }
+foreach ($notas as $nota) {
+    $suma += $nota;
+    if ($nota > $mayor) { $mayor = $nota; }
+    if ($nota < $menor) { $menor = $nota; }
+    if ($nota >= 71) { $aprobados++; } else { $reprobados++; }
 }
+$promedio = $suma / $cantidad;
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Ejercicio 6 - Pedidos</title>
+    <title>Ejercicio 1 - Calificaciones</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 30px; }
-        .caja { background: #fff; max-width: 500px; margin: 0 auto 20px; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px #0003; }
-        h1 { text-align: center; color: #1f3a5f; }
-        h2 { font-size: 18px; color: #1f3a5f; }
-        .ok { border-left: 6px solid #27ae60; }
-        .error { border-left: 6px solid #c0392b; color: #c0392b; }
+        .caja { background: #fff; max-width: 500px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px #0003; }
+        h1 { font-size: 22px; color: #1f3a5f; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+        th { background: #1f3a5f; color: #fff; }
+        .reprobado { color: #c0392b; font-weight: bold; }
+        .aprobado { color: #27ae60; font-weight: bold; }
     </style>
 </head>
 <body>
-<h1>Sistema de pedidos</h1>
+<div class="caja">
+    <h1>Estadísticas de calificaciones</h1>
 
-<div class="caja ok">
-    <h2>Caso 1: pedido válido</h2>
-    <?php
-    try {
-        $pedido1 = new Pedido("Ana Pérez", "Monitor", 185.00, 2);
-        echo $pedido1->mostrarResumen();
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
-    }
-    ?>
-</div>
+    <h3>Listado de notas</h3>
+    <table>
+        <tr><th>#</th><th>Nota</th><th>Estado</th></tr>
+        <?php $i = 1; foreach ($notas as $nota): ?>
+            <tr>
+                <td><?= $i++ ?></td>
+                <td><?= $nota ?></td>
+                <?php if ($nota >= 71): ?>
+                    <td class="aprobado">Aprobado</td>
+                <?php else: ?>
+                    <td class="reprobado">Reprobado</td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
+    </table>
 
-<div class="caja error">
-    <h2>Caso 2: pedido inválido</h2>
-    <?php
-    try {
-        $pedido2 = new Pedido("Carlos Díaz", "Teclado", 25.00, 0);
-        echo $pedido2->mostrarResumen();
-    } catch (Exception $e) {
-        echo "<strong>Error:</strong> " . $e->getMessage();
-    }
-    ?>
+    <h3>Resumen</h3>
+    <table>
+        <tr><td>Estudiantes evaluados</td><td><?= $cantidad ?></td></tr>
+        <tr><td>Suma de calificaciones</td><td><?= $suma ?></td></tr>
+        <tr><td>Promedio del grupo</td><td><?= number_format($promedio, 2) ?></td></tr>
+        <tr><td>Calificación más alta</td><td><?= $mayor ?></td></tr>
+        <tr><td>Calificación más baja</td><td><?= $menor ?></td></tr>
+        <tr><td>Aprobados (nota &ge; 71)</td><td><?= $aprobados ?></td></tr>
+        <tr><td>Reprobados (nota &lt; 71)</td><td><?= $reprobados ?></td></tr>
+    </table>
 </div>
 </body>
 </html>
